@@ -5,7 +5,6 @@ package generic
 import (
 	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/driver/definition"
 	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/utils"
-	"math"
 	"strconv"
 	"strings"
 )
@@ -22,7 +21,7 @@ func getCPUTemperatureFromFile(path string) float64 {
 		return -1
 	}
 
-	return math.Round((float64(temp) / float64(1000))*100)/100
+	return float64(temp) / float64(1000)
 }
 
 // Use Generic Linux Driver
