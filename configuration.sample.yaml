@@ -1,0 +1,43 @@
+# General Settings
+name: Server
+telemetry-update-delay: 15 # Seconds
+
+# MQTT Settings
+broker: 192.168.1.10:1883
+id: server
+user: "user"
+password: "1234"
+
+# Sensors
+boot-timestamp: true # Enable or dissable sensor
+
+cpu:
+    usage:
+        enabled: true # Enable or dissable sensor
+        decimal: 2 # Number of decimal places to be rounded to
+        
+    temperature:
+        enabled: true
+        decimal: 2
+
+ram:
+    enabled: true
+    decimal: 2
+   
+swap:
+    enabled: true
+    decimal: 2
+
+storage:
+    - drive: /mnt/usbhd0 # Path to the Mounted Drive folder
+      decimal: 2
+
+network:
+    - interface: eth0 # Network Interface Name
+      bitrate: MB # Can be Byte, KB, MB, GB, TB
+      decimal: 2
+      ingress: true
+      egress: true
+
+rpi:
+    power-status: true
