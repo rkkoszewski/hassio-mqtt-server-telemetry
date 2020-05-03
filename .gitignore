@@ -1,2 +1,5 @@
 configuration.test.yaml
 .idea
+main
+main.exe
+hassio-mqtt-server-telemetry

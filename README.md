@@ -33,6 +33,13 @@ file can be set as first argument to the executable)
     4. sudo systemctl enable system-telemetry-sensor.service 
     5. sudo systemctl start system-telemetry-sensor.service
 
+## To cross compile for AsusWRT
+Tested on an Asus RT-AC68U. Before the compilation step set the following environment variables:
+
+set GOOS=linux
+set GOARCH=arm
+set GOARM=5
+
 ## Extra's
 You can reduce the size of the binary by commenting out the drivers used in driver/driver.go. This might be improved 
 in the future by using compiler flags.

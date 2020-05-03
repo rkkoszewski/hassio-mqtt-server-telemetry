@@ -1,3 +1,5 @@
+// +build !noghw
+
 package ghw
 
 import (

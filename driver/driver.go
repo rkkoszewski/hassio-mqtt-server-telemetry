@@ -1,6 +1,7 @@
 package driver
 
 import (
+	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/driver/asuswrt"
 	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/driver/definition"
 	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/driver/generic"
 	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/driver/ghw"
@@ -35,6 +36,7 @@ func GetDriver() definition.Driver {
 
 	// All supported drivers (Comment out the drivers that should not be compiled into the binary)
 	rpi.UseDriver(&driver)
+	asuswrt.UseDriver(&driver)
 	generic.UseDriver(&driver)
 	gopsutil.UseDriver(&driver)
 	ghw.UseDriver(&driver)
