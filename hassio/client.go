@@ -25,7 +25,17 @@ func NewClient(broker string, id string, user string, password string) Client {
 	opts.SetUsername(user)
 	opts.SetPassword(password)
 	opts.SetCleanSession(true)
+	opts.SetAutoReconnect(true)
 	opts.SetWill(lwtTopic, "offline", 1, true)
+	opts.SetOnConnectHandler(func(client mqtt.Client){
+		log.Println("Connected to MQTT Broker")
+		token := client.Publish(lwtTopic, 1, true, "online")
+		token.Wait()
+		err := token.Error()
+		if err != nil {
+			log.Println("ERROR: Failed to register Last Will Testament message due to:", err.Error())
+		}
+	})
 
 	client := Client{
 		client: mqtt.NewClient(opts),
@@ -39,8 +49,7 @@ func NewClient(broker string, id string, user string, password string) Client {
 
 // Connect To Broker
 func (client Client) Connect() {
-	Connect:
-	log.Print("Attempting to connect to broker.. ")
+	log.Println("Attempting to connect to broker.. ")
 
 	timeout := 0 * time.Second
 	for {
@@ -58,19 +67,7 @@ func (client Client) Connect() {
 		}
 		log.Println("Waiting for", timeout, " seconds before retying")
 		time.Sleep(timeout)
-		log.Print("Attempting to connect to broker.. ")
-	}
-
-	log.Println("Connected")
-
-	// Send Last Will Testament message
-	err := client.Publish(client.lwtTopic, 1, true, "online")
-	if err != nil && !client.client.IsConnected() {
-		log.Println("ERROR: Failed to register Last Will Testament message due to:", err)
-
-		if !client.client.IsConnected() {
-			goto Connect
-		}
+		log.Println("Attempting to connect to broker.. ")
 	}
 }
 
@@ -78,7 +75,6 @@ func (client Client) Connect() {
 func (client Client) Disconnect(){
 	client.Publish(client.lwtTopic, 1, true, "offline")
 	client.client.Disconnect(250)
-	// TODO: Add semaphore to avoid connecting while disconnecting?
 }
 
 // Submit Message
