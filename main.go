@@ -2,15 +2,16 @@ package main
 
 import (
 	"fmt"
-	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/config"
-	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/driver"
-	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/hassio"
-	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/utils"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/config"
+	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/driver"
+	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/hassio"
+	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/utils"
 )
 
 func main() {
@@ -25,6 +26,12 @@ func main() {
 	config, err := config.Read(configFile)
 	if err != nil {
 		log.Fatal("ERROR: ", err.Error())
+	}
+
+	// Startup Delay
+	if config.Advanced.StartDelay > 0 {
+		log.Printf("Startup delay is configured. Sleeping for %v seconds.", config.Advanced.StartDelay)
+		time.Sleep(time.Duration(config.Advanced.StartDelay) * time.Second)
 	}
 
 	// Setting Variables
@@ -62,8 +69,12 @@ func main() {
 	}
 
 	hostId := "UniqueDeviceIDMissing"
-	if driver.GetHostId != nil {
-		hostId = driver.GetHostId()
+	if config.Advanced.DeviceID != "auto" {
+		hostId = config.Advanced.DeviceID
+	} else {
+		if driver.GetHostId != nil {
+			hostId = driver.GetHostId()
+		}
 	}
 
 	// Initialize MQTT Client
@@ -169,7 +180,9 @@ func main() {
 				"mdi:download",
 				func() interface{} {
 					bytes := driver.GetNetworkInBytes(network.Interface)
-					if bytes == 0 { return 0 }
+					if bytes == 0 {
+						return 0
+					}
 					return utils.ValuePrecision(
 						utils.ConvertToUnitOfMeasure(float64(bytes), measureId),
 						network.Decimal)

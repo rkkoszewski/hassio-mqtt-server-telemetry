@@ -1,3 +1,4 @@
+//go:build linux
 // +build linux
 
 package asuswrt
@@ -64,7 +65,16 @@ func UseDriver(driver *definition.Driver) {
 				return temp
 			}
 		}
+
+		// Get Host ID
+		if driver.GetHostId == nil && utils.CommandExists("nvram") {
+			hostIDBytes, err := exec.Command("nvram", "get", "serial_no").CombinedOutput()
+			if err == nil {
+				hostID := string(hostIDBytes)
+				driver.GetHostId = func() string {
+					return hostID
+				}
+			}
+		}
 	}
-
-
 }
