@@ -2,13 +2,13 @@ package config
 
 type Configuration struct {
 	// General Settings
-	Name string
+	Name                 string
 	TelemetryUpdateDelay int `yaml:"telemetry-update-delay"`
 
 	// MQTT Settings
-	Broker string
-	Id string
-	User string
+	Broker   string
+	Id       string
+	User     string
 	Password string
 
 	// Sensors
@@ -40,19 +40,24 @@ type Configuration struct {
 	Network []Interface
 
 	Rpi struct {
-		PowerStatus bool `yaml:"power-status"`
+		PowerStatus bool `default:"false" yaml:"power-status"`
+	}
+
+	Advanced struct {
+		StartDelay int    `default:"0" yaml:"start-delay"`
+		DeviceID   string `default:"auto" yaml:"device-id"`
 	}
 }
 
 type Drive struct {
-	Drive string
+	Drive   string
 	Decimal int
 }
 
 type Interface struct {
 	Interface string
-	Bitrate string
-	Decimal int
-	Ingress bool
-	Egress bool
+	Bitrate   string
+	Decimal   int
+	Ingress   bool
+	Egress    bool
 }

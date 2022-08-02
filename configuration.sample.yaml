@@ -41,3 +41,7 @@ network:
 
 rpi:
     power-status: true
+
+advanced:
+    start-delay: 0 # (Optional) Start delay in seconds.
+    device-id: auto # (Optional) Set the device id manually. This is usefull for devices that don't have a board serial.
