@@ -1,7 +1,7 @@
 //go:build !linux
 // +build !linux
 
-package asuswrt
+package lmsensors
 
 import (
 	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/config"

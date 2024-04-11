@@ -9,39 +9,40 @@ user: "user"
 password: "1234"
 
 # Sensors
-boot-timestamp: true # Enable or dissable sensor
+boot-timestamp: true # Enable or disable sensor
 
 cpu:
-    usage:
-        enabled: true # Enable or dissable sensor
-        decimal: 2 # Number of decimal places to be rounded to
-        
-    temperature:
-        enabled: true
-        decimal: 2
+  usage:
+    enabled: true # Enable or disable sensor
+    total: false # Enable or disable total usage
+    decimal: 2 # Number of decimal places to be rounded to
+
+  temperature:
+    enabled: true
+    decimal: 2
 
 ram:
-    enabled: true
-    decimal: 2
-   
+  enabled: true
+  decimal: 2
+
 swap:
-    enabled: true
-    decimal: 2
+  enabled: true
+  decimal: 2
 
 storage:
-    - drive: /mnt/usbhd0 # Path to the Mounted Drive folder
-      decimal: 2
+  - drive: /mnt/usbhd0 # Path to the Mounted Drive folder
+    decimal: 2
 
 network:
-    - interface: eth0 # Network Interface Name
-      bitrate: MB # Can be Byte, KB, MB, GB, TB
-      decimal: 2
-      ingress: true
-      egress: true
+  - interface: eth0 # Network Interface Name
+    bitrate: MB # Can be Byte, KB, MB, GB, TB
+    decimal: 2
+    ingress: true
+    egress: true
 
 rpi:
-    power-status: true
+  power-status: true
 
 advanced:
-    start-delay: 0 # (Optional) Start delay in seconds.
-    device-id: auto # (Optional) Set the device id manually. This is usefull for devices that don't have a board serial.
+  start-delay: 0 # (Optional) Start delay in seconds.
+  device-id: auto # (Optional) Set the device id manually. This is usefull for devices that don't have a board serial.

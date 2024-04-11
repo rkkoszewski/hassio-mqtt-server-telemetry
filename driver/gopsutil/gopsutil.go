@@ -1,24 +1,26 @@
 package gopsutil
 
 import (
+	"os"
+	"strings"
+	"time"
+
+	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/config"
 	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/driver/definition"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/mem"
 	"github.com/shirou/gopsutil/net"
-	"os"
-	"strings"
-	"time"
 )
 
-func GetTotalCPUUsage() float64 {
-	percent, err := cpu.Percent(0, false)
+func GetCPUUsage(total bool) []float64 {
+	percent, err := cpu.Percent(0, !total)
 	if err != nil {
-		return -1
+		return []float64{-1}
 	}
 
-	return percent[0]
+	return percent
 }
 
 func GetDiskUsePercent(path string) float64 {
@@ -49,14 +51,14 @@ func GetSwapUsePercent() float64 {
 }
 
 var (
-	netIOCountersStatCacheFirst []net.IOCountersStat
-	netIOCountersStatTimeFirst time.Time
+	netIOCountersStatCacheFirst  []net.IOCountersStat
+	netIOCountersStatTimeFirst   time.Time
 	netIOCountersStatCacheSecond []net.IOCountersStat
-	netIOCountersStatTimeSecond time.Time
+	netIOCountersStatTimeSecond  time.Time
 )
 
 // Fetch Network Stats Once a Second
-func fetchNetworkStatSample(){
+func fetchNetworkStatSample() {
 	if time.Since(netIOCountersStatTimeFirst).Seconds() < 1 {
 		return
 	}
@@ -70,7 +72,7 @@ func fetchNetworkStatSample(){
 	if netIOCountersStatCacheFirst == nil { // This allows to detect the interface when no previous data is available
 		netIOCountersStatCacheSecond = stat
 		netIOCountersStatTimeSecond = time.Now()
-	}else{
+	} else {
 		netIOCountersStatCacheSecond = netIOCountersStatCacheFirst
 		netIOCountersStatTimeSecond = netIOCountersStatTimeFirst
 	}
@@ -115,10 +117,10 @@ func GetNetworkOutBytes(nic string) uint64 {
 }
 
 // Use GOPSUtil based Driver
-func UseDriver(driver *definition.Driver){
+func UseDriver(driver *definition.Driver, config *config.Configuration) {
 
-	if driver.GetTotalCPUUsage == nil && GetTotalCPUUsage() != -1 {
-		driver.GetTotalCPUUsage = GetTotalCPUUsage
+	if driver.GetCPUUsage == nil && (GetCPUUsage(config.Cpu.Usage.Total))[0] != -1 {
+		driver.GetCPUUsage = GetCPUUsage
 	}
 
 	if driver.GetDiskUsePercent == nil {
@@ -129,7 +131,7 @@ func UseDriver(driver *definition.Driver){
 		driver.GetRAMUsePercent = GetRAMUsePercent
 	}
 
-	if driver.GetSwapUsePercent == nil && GetTotalCPUUsage() != -1 {
+	if driver.GetSwapUsePercent == nil && GetSwapUsePercent() != -1 {
 		driver.GetSwapUsePercent = GetSwapUsePercent
 	}
 
@@ -137,7 +139,7 @@ func UseDriver(driver *definition.Driver){
 
 		// Get Host Information
 		info, err := host.Info()
-		if err == nil{
+		if err == nil {
 
 			// Host ID
 			if driver.GetHostId == nil {

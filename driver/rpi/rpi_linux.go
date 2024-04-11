@@ -1,39 +1,50 @@
+//go:build linux
 // +build linux
 
 package rpi
 
 import (
+	"strings"
+
+	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/config"
 	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/driver/definition"
 	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/utils"
-	"strings"
 )
 
 // Get Raspberry Pi Power Status
 func GetRaspberryPowerStatus() string {
 	status, err := utils.ReadFileToString("/sys/devices/platform/soc/soc:firmware/get_throttled")
-	if err != nil{
+	if err != nil {
 		return "readfail"
 	}
 
 	switch status {
-	case "0\n": return "normal"
-	case "1000\n": return "undervolt"
-	case "2000\n": return "bad_power_supply"
-	case "3000\n": return "bad_power_supply"
-	case "4000\n": return "bad_power_supply_throttle"
-	case "5000\n": return "normal"
-	case "8000\n": return "overheat"
-	default: return "unknown"
+	case "0\n":
+		return "normal"
+	case "1000\n":
+		return "undervolt"
+	case "2000\n":
+		return "bad_power_supply"
+	case "3000\n":
+		return "bad_power_supply"
+	case "4000\n":
+		return "bad_power_supply_throttle"
+	case "5000\n":
+		return "normal"
+	case "8000\n":
+		return "overheat"
+	default:
+		return "unknown"
 	}
 }
 
 // Use Raspberry Pi Specific Driver
-func UseDriver(driver *definition.Driver) {
+func UseDriver(driver *definition.Driver, config *config.Configuration) {
 
 	// Board Model
 	if driver.GetBoardModel == nil {
 		model, err := utils.ReadFileToString("/proc/device-tree/model")
-		if err == nil{
+		if err == nil {
 			model = strings.Trim(model, "\u0000")
 			driver.GetBoardModel = func() string {
 				return model

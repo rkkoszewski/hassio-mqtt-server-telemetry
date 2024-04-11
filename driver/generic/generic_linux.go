@@ -4,12 +4,14 @@
 package generic
 
 import (
-	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/driver/definition"
-	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/utils"
 	"io/ioutil"
 	"log"
 	"strconv"
 	"strings"
+
+	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/config"
+	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/driver/definition"
+	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/utils"
 )
 
 // Get CPU Temperature from File
@@ -34,7 +36,7 @@ func buildCPUTemperatureFromFileFunc(path string) func() float64 {
 }
 
 // Use Generic Linux Driver
-func UseDriver(driver *definition.Driver) {
+func UseDriver(driver *definition.Driver, config *config.Configuration) {
 
 	// Get CPU bitness
 	if driver.Is64BitCPU == nil {

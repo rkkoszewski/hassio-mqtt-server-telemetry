@@ -1,14 +1,16 @@
+//go:build !noghw
 // +build !noghw
 
 package ghw
 
 import (
 	"github.com/jaypipes/ghw"
+	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/config"
 	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/driver/definition"
 )
 
 // Use GHW based Driver
-func UseDriver(driver *definition.Driver){
+func UseDriver(driver *definition.Driver, config *config.Configuration) {
 
 	if driver.GetBoardModel == nil || driver.GetBoardVendor == nil {
 
@@ -34,4 +36,3 @@ func UseDriver(driver *definition.Driver){
 	}
 
 }
-

@@ -17,6 +17,7 @@ type Configuration struct {
 	Cpu struct {
 		Usage struct {
 			Enabled bool
+			Total bool
 			Decimal int
 		}
 		Temperature struct {

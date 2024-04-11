@@ -4,15 +4,17 @@
 package asuswrt
 
 import (
-	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/driver/definition"
-	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/utils"
 	"os/exec"
 	"regexp"
 	"strconv"
+
+	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/config"
+	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/driver/definition"
+	"github.com/rkkoszewski/hassio-mqtt-server-telemetry/utils"
 )
 
 // Use Asus Router Specific Driver
-func UseDriver(driver *definition.Driver) {
+func UseDriver(driver *definition.Driver, config *config.Configuration) {
 
 	// Check if it's an Asus Router
 	if utils.FileExists("/rom/.asusrouter") {

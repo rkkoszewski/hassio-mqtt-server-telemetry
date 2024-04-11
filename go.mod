@@ -7,6 +7,7 @@ require (
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/jaypipes/ghw v0.9.0
 	github.com/shirou/gopsutil v3.21.11+incompatible
+	github.com/ssimunic/gosensors v0.0.0-20170414000417-e7ab9a4e799b // indirect
 	github.com/stretchr/testify v1.5.1 // indirect
 	github.com/tklauser/go-sysconf v0.3.10 // indirect
 	github.com/tklauser/numcpus v0.5.0 // indirect

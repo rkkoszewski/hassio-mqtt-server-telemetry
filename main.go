@@ -45,7 +45,7 @@ func main() {
 	//diskUsageDrivePath := "/mnt/usbhd0"
 
 	// Initialize Driver
-	driver := driver.GetDriver()
+	driver := driver.GetDriver(&config)
 
 	// Gather basic information
 	hostname := "Undefined"
@@ -91,21 +91,64 @@ func main() {
 	// Create Device Sensors
 
 	// CPU Usage
-	if driver.GetTotalCPUUsage != nil && config.Cpu.Usage.Enabled {
+	if driver.GetCPUUsage != nil && config.Cpu.Usage.Enabled {
 		cpuUsageIcon := "mdi:cpu-32-bit"
 		if driver.Is64BitCPU != nil && driver.Is64BitCPU() {
 			cpuUsageIcon = "mdi:cpu-64-bit"
 		}
 
-		device.AddSensor(fmt.Sprintf("%s CPU Usage", name),
-			"cpu_usage",
-			nil,
-			"%",
-			"",
-			cpuUsageIcon,
-			func() interface{} {
-				return utils.ValuePrecision(driver.GetTotalCPUUsage(), config.Cpu.Usage.Decimal)
-			})
+		if config.Cpu.Usage.Total {
+			device.AddSensor(fmt.Sprintf("%s Total CPU Usage", name),
+				"cpu_usage_total",
+				nil,
+				"%",
+				"",
+				cpuUsageIcon,
+				func() interface{} {
+					return utils.ValuePrecision(driver.GetCPUUsage(true)[0], config.Cpu.Usage.Decimal)
+				})
+		} else {
+			// Total CPU Usage
+			cpuUsage := driver.GetCPUUsage(false)
+			device.AddSensor(fmt.Sprintf("%s Total CPU Usage", name),
+				"cpu_usage_total",
+				nil,
+				"%",
+				"",
+				cpuUsageIcon,
+				func() interface{} {
+					// Update the CPU usage values
+					cpuUsage = driver.GetCPUUsage(false)
+
+					// Calculate the total CPU usage
+					totalUsage := 0.0
+					for _, coreUsage := range cpuUsage {
+						totalUsage += coreUsage
+					}
+
+					return utils.ValuePrecision(totalUsage/float64(len(cpuUsage)), config.Cpu.Usage.Decimal)
+				})
+
+			// Per Core CPU Usage
+			for i := range cpuUsage {
+				currentCore := i
+				device.AddSensor(fmt.Sprintf("%s CPU Core %d Usage", name, currentCore),
+					fmt.Sprintf("cpu_usage_core_%d", currentCore),
+					nil,
+					"%",
+					"",
+					cpuUsageIcon,
+					func() interface{} {
+						/*  Superfluous, as the CPU usage is updated in the total CPU usage sensor
+						// If it's the first index update the CPU usage values
+						if currentCore == 0 {
+							cpuUsage = driver.GetCPUUsage(false)
+						}
+						*/
+						return utils.ValuePrecision(cpuUsage[currentCore], config.Cpu.Usage.Decimal)
+					})
+			}
+		}
 	}
 
 	// CPU Temperature
@@ -238,7 +281,7 @@ func main() {
 	client.Connect()
 
 	// Handle SigTerm
-	exit := make(chan os.Signal)
+	exit := make(chan os.Signal, 1)
 	signal.Notify(exit, os.Interrupt, syscall.SIGTERM)
 	go func() {
 		<-exit
