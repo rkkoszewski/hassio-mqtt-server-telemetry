@@ -29,6 +29,11 @@ swap:
   enabled: true
   decimal: 2
 
+gpu:
+  usage:
+    enabled: true
+    decimal: 2
+
 storage:
   - drive: /mnt/usbhd0 # Path to the Mounted Drive folder
     decimal: 2

@@ -36,6 +36,13 @@ type Configuration struct {
 		Decimal int
 	}
 
+	Gpu struct {
+		Usage struct {
+			Enabled bool
+			Decimal int
+		}
+	}
+
 	Storage []Drive
 
 	Network []Interface

@@ -164,6 +164,19 @@ func main() {
 			})
 	}
 
+	// GPU Usage
+	if driver.GetGPUUsage != nil && config.Gpu.Usage.Enabled {
+		device.AddSensor(fmt.Sprintf("%s GPU Usage", name),
+			"gpu_usage",
+			nil,
+			"%",
+			"",
+			"mdi:expansion-card",
+			func() interface{} {
+				return utils.ValuePrecision(driver.GetGPUUsage(), config.Gpu.Usage.Decimal)
+			})
+	}
+
 	// RAM Use
 	if driver.GetRAMUsePercent != nil && config.Ram.Enabled {
 		device.AddSensor(fmt.Sprintf("%s RAM Use", name),

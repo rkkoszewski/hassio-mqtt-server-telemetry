@@ -6,6 +6,7 @@ package generic
 import (
 	"io/ioutil"
 	"log"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -32,6 +33,27 @@ func getCPUTemperatureFromFile(path string) float64 {
 func buildCPUTemperatureFromFileFunc(path string) func() float64 {
 	return func() float64 {
 		return getCPUTemperatureFromFile(path)
+	}
+}
+
+// Get GPU Usage from File
+func getGPUUsageFromFile(path string) float64 {
+	usageString, err := utils.ReadFileToString(path)
+	if err != nil {
+		return -1
+	}
+
+	usage, err := strconv.ParseFloat(strings.TrimSpace(usageString), 64)
+	if err != nil {
+		return -1
+	}
+
+	return usage
+}
+
+func buildGPUUsageFromFileFunc(path string) func() float64 {
+	return func() float64 {
+		return getGPUUsageFromFile(path)
 	}
 }
 
@@ -106,7 +128,16 @@ func UseDriver(driver *definition.Driver, config *config.Configuration) {
 				driver.GetCPUTemperature = buildCPUTemperatureFromFileFunc("/sys/class/thermal/thermal_zone1/temp")
 			}
 		}
+	}
 
+	// GPU Usage
+	if driver.GetGPUUsage == nil {
+		matches, err := filepath.Glob("/sys/class/drm/card*/device/gpu_busy_percent")
+		if err == nil && len(matches) > 0 {
+			// Use the first available GPU
+			log.Printf("Selecting GPU Usage sensor: %s", matches[0])
+			driver.GetGPUUsage = buildGPUUsageFromFileFunc(matches[0])
+		}
 	}
 
 }

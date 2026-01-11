@@ -8,6 +8,7 @@ type GetSoftwareVersion func() string
 type GetHostname func() string
 type GetCPUUsage func(bool) []float64
 type GetCPUTemperature func() float64
+type GetGPUUsage func() float64
 type GetDiskUsePercent func(string) float64
 type GetRAMUsePercent func() float64
 type GetSwapUsePercent func() float64
@@ -25,6 +26,7 @@ type Driver struct {
 	GetHostname             GetHostname
 	GetCPUUsage             GetCPUUsage
 	GetCPUTemperature       GetCPUTemperature
+	GetGPUUsage             GetGPUUsage
 	GetDiskUsePercent       GetDiskUsePercent
 	GetRAMUsePercent        GetRAMUsePercent
 	GetSwapUsePercent       GetSwapUsePercent
